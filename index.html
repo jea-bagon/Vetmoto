@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- ₱ -->
+<meta charset="UTF-8">
+<!---->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vetmoto | Pet Clinic</title>
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; font-family: Arial, sans-serif; background: #faf8f7; color: #332d2d; }
+header { background: white; border-bottom: 2px solid #e9dedd; padding: 14px 5%; display: flex; align-items: center; gap: 15px; }
+header img { width: 66px; height: 66px; object-fit: contain; }
+header h2 { margin: 0; letter-spacing: 2px; }
+header h2 span { color: #922b30; }
+header small { color: #866b6b; }
+main { max-width: 1120px; margin: 25px auto; padding: 0 16px; }
+h1 { font-size: 28px; margin-bottom: 5px; }
+h3 { margin: 6px 0 15px; }
+p { line-height: 1.5; }
+.muted { color: #827878; }
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 22px 0; }
+.card { background: white; border: 1px solid #e9dfdd; border-radius: 13px; padding: 18px; margin-bottom: 16px; }
+.stat { border-top: 4px solid #922b30; }
+.stat strong { display: block; font-size: 27px; color: #922b30; }
+.tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+button { padding: 10px 14px; border: 0; border-radius: 8px; cursor: pointer; font: inherit; }
+button.primary, .tabs button.active { background: #922b30; color: white; }
+button.secondary { background: #f5e9e8; color: #79292d; }
+button.danger { background: #fbe9e9; color: #9b2525; }
+.tabs button { background: white; border: 1px solid #e8dddb; }
+input, select, textarea { width: 100%; padding: 10px; border: 1px solid #d7cbca; border-radius: 7px; font: inherit; }
+label { display: block; margin-bottom: 12px; font-weight: bold; font-size: 13px; }
+label input, label select, label textarea { margin-top: 5px; font-weight: normal; }
+textarea { min-height: 70px; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.toolbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 15px; flex-wrap: wrap; }
+.toolbar input { max-width: 350px; }
+.table-scroll { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; min-width: 580px; }
+th, td { border-bottom: 1px solid #f0e8e6; padding: 11px; text-align: left; font-size: 13px; }
+th { background: #fbf5f4; }
+td button { padding: 6px 9px; margin: 2px; font-size: 12px; }
+.page { display: none; }
+.page.active { display: block; }
+.notice { background: #fbf0e3; color: #75491b; padding: 12px; border-radius: 8px; }
+.empty { color: #807575; padding: 22px; text-align: center; }
+.modal-bg { display: none; position: fixed; inset: 0; z-index: 10; background: #201719aa; align-items: center; justify-content: center; padding: 15px; }
+.modal { width: min(660px,100%); max-height: 90vh; overflow-y: auto; background: white; padding: 22px; border-radius: 13px; }
+.buttons { display: flex; gap: 8px; justify-content: flex-end; }
+.timeline-item { padding: 12px 15px; border-left: 3px solid #922b30; background: #fcf7f6; margin-bottom: 10px; }
+@media (max-width: 730px) { .stats { grid-template-columns: repeat(2,1fr); } .grid { grid-template-columns: 1fr; } h1 { font-size: 23px; } }
+/* Simple pet overview cards */
+.overview-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(250px,1fr)); gap: 12px; margin-top: 15px; }
+.overview-pet { border: 1px solid #e9dfdd; border-radius: 10px; padding: 15px; background: #fffafa; }
+.overview-pet h3 { color: #922b30; }
+.overview-pet p { margin: 6px 0; font-size: 14px; }
+</style>
+</head>
+<body>
+<header>
+  <img id="logo" src="data:image/webp;base64,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" alt="Vetmoto logo">
+  <div><h2>VET<span>MOTO</span></h2><small>ANIMAL CLINIC </small></div>
+</header>
+<main>
+  <h1>Pet Clinic Management System</h1>
+  <p class="muted">Manage pets, consultations, services, and care reminders.</p>
+  <div class="stats">
+    <div class="card stat">Registered Pets<strong id="totalPets">0</strong></div>
+    <div class="card stat">Consultations<strong id="totalVisits">0</strong></div>
+    <div class="card stat">Services<strong id="totalServices">0</strong></div>
+    <div class="card stat">Pending Reminders<strong id="totalReminders">0</strong></div>
+  </div>
+  <nav class="tabs">
+    <button onclick="showPage('overview', this)">Pet Overview</button>
+    <button class="active" onclick="showPage('pets', this)">Pet Directory</button>
+    <button onclick="showPage('visits', this)">Consultations</button>
+    <button onclick="showPage('services', this)">Clinic Services</button>
+    <button onclick="showPage('reminders', this)">Care Reminders</button>
+    <button onclick="showPage('history', this)">Medical History</button>
+  </nav>
+  <section id="overview" class="page card">
+    <div class="toolbar"><h3>All Pet Information</h3></div>
+    <input id="overviewSearch" oninput="renderOverview()" placeholder="Search by pet name or owner..." aria-label="Search pet overview">
+    <div id="overviewList" class="overview-grid"></div>
+  </section>
+  <section id="pets" class="page active card">
+    <div class="toolbar"><h3>Pet Directory</h3><button class="primary" onclick="openForm('pet')">+ Register Pet</button></div>
+    <input id="petSearch" oninput="render()" placeholder="Search pet or owner..." aria-label="Search pets">
+    <div class="table-scroll" id="petTable"></div>
+  </section>
+  <section id="visits" class="page card">
+    <div class="toolbar"><h3>Consultations</h3><button class="primary" onclick="openForm('visit')">+ Add Consultation</button></div>
+    <div class="table-scroll" id="visitTable"></div>
+  </section>
+  <section id="services" class="page card">
+    <div class="toolbar"><h3>Clinic Services</h3><button class="primary" onclick="openForm('service')">+ Add Service</button></div>
+    <input id="serviceSearch" oninput="render()" placeholder="Search service..." aria-label="Search services">
+    <div class="table-scroll" id="serviceTable"></div>
+  </section>
+  <section id="reminders" class="page card">
+    <div class="toolbar"><h3>Care Reminders</h3><button class="primary" onclick="openForm('reminder')">+ Add Reminder</button></div>
+    <div id="reminderTable" class="table-scroll"></div>
+  </section>
+  <section id="history" class="page card">
+    <h3>Pet Medical History</h3>
+    <label>Select Pet<select id="historyPet" onchange="renderHistory()"></select></label>
+    <div id="healthAlerts" class="notice" style="margin-bottom:15px"></div>
+    <div id="historyList"></div>
+  </section>
+</main>
+<div id="modalBg" class="modal-bg">
+  <div class="modal">
+    <h3 id="formTitle">Add Record</h3>
+    <form id="recordForm">
+      <div id="formFields"></div>
+      <div class="buttons"><button type="button" class="secondary" onclick="closeForm()">Cancel</button><button type="submit" class="primary">Save Record</button></div>
+    </form>
+  </div>
+</div>
+<script>
+const KEY = 'vetmoto_basic_it107_v1';
+const $ = id => document.getElementById(id);
+const starterServices = [
+  {id:'s1', name:'General Consultation', category:'Consultation', price:400},
+  {id:'s2', name:'Rabies Vaccination', category:'Vaccination', price:350},
+  {id:'s3', name:'Deworming', category:'Treatment', price:250},
+  {id:'s4', name:'Basic Grooming', category:'Grooming', price:500}
+];
+let data = {pets:[], visits:[], services:starterServices, reminders:[]};
+try {
+  const saved = JSON.parse(localStorage.getItem(KEY));
+  if (saved && ['pets','visits','services','reminders'].every(k=>Array.isArray(saved[k]))) data = saved;
+} catch (error) { console.log('Using starter records.'); }
+const samplePets = [
+  {"id": "demo_pet_01", "name": "Max", "owner": "Daniel Mendoza", "species": "Dog", "breed": "Golden Retriever", "sex": "Male", "birth": "2021-05-09"},
+  {"id": "demo_pet_02", "name": "Bella", "owner": "Sofia Ramirez", "species": "Dog", "breed": "Shih Tzu", "sex": "Female", "birth": "2022-01-14"},
+  {"id": "demo_pet_03", "name": "Charlie", "owner": "Miguel Torres", "species": "Dog", "breed": "Beagle", "sex": "Male", "birth": "2020-08-22"},
+  {"id": "demo_pet_04", "name": "Daisy", "owner": "Angela Reyes", "species": "Cat", "breed": "Persian", "sex": "Female", "birth": "2023-02-11"},
+  {"id": "demo_pet_05", "name": "Rocky", "owner": "Joshua Santos", "species": "Dog", "breed": "Siberian Husky", "sex": "Male", "birth": "2021-12-03"},
+  {"id": "demo_pet_06", "name": "Coco", "owner": "Patricia Cruz", "species": "Dog", "breed": "Pomeranian", "sex": "Female", "birth": "2022-09-18"},
+  {"id": "demo_pet_07", "name": "Milo", "owner": "Kevin Garcia", "species": "Cat", "breed": "British Shorthair", "sex": "Male", "birth": "2023-04-07"},
+  {"id": "demo_pet_08", "name": "Oreo", "owner": "Nicole Fernandez", "species": "Cat", "breed": "Domestic Shorthair", "sex": "Male", "birth": "2022-06-21"},
+  {"id": "demo_pet_09", "name": "Bruno", "owner": "Rafael Castillo", "species": "Dog", "breed": "Labrador Retriever", "sex": "Male", "birth": "2020-11-19"},
+  {"id": "demo_pet_10", "name": "Snow", "owner": "Camille Bautista", "species": "Rabbit", "breed": "Holland Lop", "sex": "Female", "birth": "2024-03-01"},
+  {"id": "demo_pet_11", "name": "Simba", "owner": "Adrian Flores", "species": "Cat", "breed": "Siamese", "sex": "Male", "birth": "2023-07-28"},
+  {"id": "demo_pet_12", "name": "Peanut", "owner": "Jasmine Navarro", "species": "Dog", "breed": "Chihuahua", "sex": "Female", "birth": "2022-10-26"},
+  {"id": "demo_pet_13", "name": "Lucky", "owner": "Christian Ramos", "species": "Dog", "breed": "Aspin", "sex": "Male", "birth": "2021-03-13"},
+  {"id": "demo_pet_14", "name": "Ginger", "owner": "Hannah Villanueva", "species": "Cat", "breed": "Domestic Shorthair", "sex": "Female", "birth": "2024-01-15"},
+  {"id": "demo_pet_15", "name": "Toby", "owner": "Mark Dela Cruz", "species": "Dog", "breed": "Poodle", "sex": "Male", "birth": "2021-09-06"}
+];
+const sampleVisits = [
+  {"id": "demo_visit_01", "petId": "demo_pet_01", "date": "2026-10-02", "serviceId": "s1", "serviceName": "General Consultation", "symptoms": "Mild skin irritation", "treatment": "Physical examination; medicated shampoo recommended.", "charge": 400, "followup": ""},
+  {"id": "demo_visit_02", "petId": "demo_pet_02", "date": "2026-10-03", "serviceId": "s2", "serviceName": "Rabies Vaccination", "symptoms": "Routine rabies vaccination", "treatment": "Rabies vaccine administered; monitor for side effects.", "charge": 350, "followup": ""},
+  {"id": "demo_visit_03", "petId": "demo_pet_03", "date": "2026-10-04", "serviceId": "s3", "serviceName": "Deworming", "symptoms": "Routine parasite prevention", "treatment": "Deworming medicine administered by veterinarian.", "charge": 250, "followup": ""},
+  {"id": "demo_visit_04", "petId": "demo_pet_04", "date": "2026-10-05", "serviceId": "s1", "serviceName": "General Consultation", "symptoms": "Mild eye irritation", "treatment": "Eye examination and cleaning; follow-up if symptoms persist.", "charge": 400, "followup": ""},
+  {"id": "demo_visit_05", "petId": "demo_pet_05", "date": "2026-10-06", "serviceId": "s4", "serviceName": "Basic Grooming", "symptoms": "Routine hygiene", "treatment": "Bath, brushing and nail trimming.", "charge": 500, "followup": ""},
+  {"id": "demo_visit_06", "petId": "demo_pet_06", "date": "2026-10-07", "serviceId": "s1", "serviceName": "General Consultation", "symptoms": "Reduced appetite", "treatment": "Physical examination; advised appetite monitoring.", "charge": 400, "followup": ""},
+  {"id": "demo_visit_07", "petId": "demo_pet_07", "date": "2026-10-08", "serviceId": "s2", "serviceName": "Rabies Vaccination", "symptoms": "Routine rabies vaccination", "treatment": "Rabies vaccine administered; observation advised.", "charge": 350, "followup": ""},
+  {"id": "demo_visit_08", "petId": "demo_pet_08", "date": "2026-10-09", "serviceId": "s3", "serviceName": "Deworming", "symptoms": "Routine parasite prevention", "treatment": "Deworming treatment recorded.", "charge": 250, "followup": ""},
+  {"id": "demo_visit_09", "petId": "demo_pet_09", "date": "2026-10-10", "serviceId": "s1", "serviceName": "General Consultation", "symptoms": "Occasional coughing", "treatment": "Veterinary examination; follow-up advised.", "charge": 400, "followup": ""},
+  {"id": "demo_visit_10", "petId": "demo_pet_10", "date": "2026-10-11", "serviceId": "s1", "serviceName": "General Consultation", "symptoms": "Reduced appetite", "treatment": "Diet review and veterinary assessment.", "charge": 400, "followup": ""},
+  {"id": "demo_visit_11", "petId": "demo_pet_11", "date": "2026-10-12", "serviceId": "s1", "serviceName": "General Consultation", "symptoms": "Ear scratching", "treatment": "Ear examination and cleaning.", "charge": 400, "followup": ""},
+  {"id": "demo_visit_12", "petId": "demo_pet_12", "date": "2026-10-13", "serviceId": "s4", "serviceName": "Basic Grooming", "symptoms": "Routine hygiene", "treatment": "Bath and nail trimming.", "charge": 500, "followup": ""},
+  {"id": "demo_visit_13", "petId": "demo_pet_13", "date": "2026-10-14", "serviceId": "s3", "serviceName": "Deworming", "symptoms": "Routine parasite prevention", "treatment": "Deworming treatment recorded.", "charge": 250, "followup": ""},
+  {"id": "demo_visit_14", "petId": "demo_pet_14", "date": "2026-10-15", "serviceId": "s1", "serviceName": "General Consultation", "symptoms": "Mild sneezing", "treatment": "Physical examination and observation.", "charge": 400, "followup": ""},
+  {"id": "demo_visit_15", "petId": "demo_pet_15", "date": "2026-10-16", "serviceId": "s4", "serviceName": "Basic Grooming", "symptoms": "Routine hygiene", "treatment": "Full basic grooming completed.", "charge": 500, "followup": ""}
+];
+const SAMPLE_VERSION_KEY = 'vetmoto_example_patients_v1';
+if (localStorage.getItem(SAMPLE_VERSION_KEY) !== 'added') {
+  for (const p of samplePets) {
+    const exists = data.pets.some(x =>
+      cleanSeed(x.name) === cleanSeed(p.name) &&
+      cleanSeed(x.owner) === cleanSeed(p.owner) &&
+      cleanSeed(x.species) === cleanSeed(p.species) &&
+      cleanSeed(x.breed) === cleanSeed(p.breed));
+    if (!exists) data.pets.push(p);
+  }
+  for (const v of sampleVisits) {
+    const examplePet = samplePets.find(p => p.id === v.petId);
+    const savedPet = data.pets.find(p =>
+      cleanSeed(p.name) === cleanSeed(examplePet.name) &&
+      cleanSeed(p.owner) === cleanSeed(examplePet.owner) &&
+      cleanSeed(p.species) === cleanSeed(examplePet.species) &&
+      cleanSeed(p.breed) === cleanSeed(examplePet.breed));
+    if (!savedPet) continue;
+    const record = {...v,petId:savedPet.id};
+    const exists = data.visits.some(x =>
+      x.petId === record.petId && x.date === record.date &&
+      cleanSeed(x.serviceName) === cleanSeed(record.serviceName) &&
+      cleanSeed(x.symptoms) === cleanSeed(record.symptoms));
+    if (!exists) data.visits.push(record);
+  }
+  try {
+    localStorage.setItem(KEY, JSON.stringify(data));
+    localStorage.setItem(SAMPLE_VERSION_KEY, 'added');
+  } catch (err) { console.warn('Sample records could not be saved:',err); }
+}
+function cleanSeed(value) {return String(value || '').trim().replace(/\s+/g,' ').toLowerCase();}
+let editingType = '';
+let editingId = '';
+let selectedHistoryPet = '';
+function id() { return 'rec_' + Date.now() + '_' + Math.random().toString(36).slice(2,7); }
+function clean(value) { return String(value || '').trim().replace(/\s+/g,' ').toLowerCase(); }
+function safe(value) { return String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function money(n) { return '₱' + Number(n || 0).toLocaleString('en-PH',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function petName(petId) { return data.pets.find(p=>p.id===petId)?.name || 'Unknown pet'; }
+function save() {
+  try { localStorage.setItem(KEY,JSON.stringify(data)); }
+  catch(error) { alert('Your browser could not save the changes.'); }
+  render();
+}
+function showPage(name, button) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  $(name).classList.add('active');
+  document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));
+  button.classList.add('active');
+}
+function table(headers, rows) {
+  if (!rows.length) return '<p class="empty">No records found.</p>';
+  return '<table><thead><tr>'+headers.map(h=>'<th>'+h+'</th>').join('')+'</tr></thead><tbody>'+rows.join('')+'</tbody></table>';
+}
+function actions(type,recordId) {
+  return `<button class="secondary" data-edit="${safe(type)}" data-id="${safe(recordId)}">Edit</button><button class="danger" data-delete="${safe(type)}" data-id="${safe(recordId)}">Delete</button>`;
+}
+// Show all pet profiles in one place. This uses the existing pet records.
+function renderOverview() {
+  const search = clean($('overviewSearch').value);
+  const pets = data.pets.filter(p => clean(p.name + ' ' + p.owner).includes(search)).sort((a,b) => a.name.localeCompare(b.name, undefined, {sensitivity:'base'}));
+  let html = '';
+  for (const p of pets) {
+    const visits = data.visits.filter(v => v.petId === p.id);
+    const reminders = data.reminders.filter(r => r.petId === p.id && !r.done);
+    html += `<div class="overview-pet">
+      <h3> ${safe(p.name)}</h3>
+      <p><b>Owner:</b> ${safe(p.owner)}</p>
+      <p><b>Species:</b> ${safe(p.species)}</p>
+      <p><b>Breed:</b> ${safe(p.breed)}</p>
+      <p><b>Sex:</b> ${safe(p.sex || 'Not recorded')}</p>
+      <p><b>Birth Date:</b> ${safe(p.birth || 'Not recorded')}</p>
+      <p><b>Consultations:</b> ${visits.length}</p>
+      <p><b>Pending Reminders:</b> ${reminders.length}</p>
+      <p><b>Latest Visit:</b> ${safe(visits.length ? [...visits].sort((a,b) => b.date.localeCompare(a.date))[0].date : 'No visits yet')}</p>
+    </div>`;
+  }
+  $('overviewList').innerHTML = html || '<p class="empty">No pets found.</p>';
+}
+
+function render() {
+  renderOverview();
+  $('totalPets').textContent = data.pets.length;
+  $('totalVisits').textContent = data.visits.length;
+  $('totalServices').textContent = data.services.length;
+  $('totalReminders').textContent = data.reminders.filter(r=>!r.done).length;
+  let pq = clean($('petSearch').value);
+  let sq = clean($('serviceSearch').value);
+  $('petTable').innerHTML = table(['Pet','Owner','Species / Breed','Actions'],data.pets.filter(p=>clean(p.name+' '+p.owner).includes(pq)).sort((a,b)=>a.name.localeCompare(b.name,undefined,{sensitivity:'base'})).map(p=>`<tr><td>${safe(p.name)}</td><td>${safe(p.owner)}</td><td>${safe(p.species)} / ${safe(p.breed)}</td><td>${actions('pet',p.id)}</td></tr>`));
+  $('visitTable').innerHTML = table(['Date','Pet','Service','Symptoms / Reason','Charge','Actions'],[...data.visits].sort((a,b)=>b.date.localeCompare(a.date)).map(v=>`<tr><td>${safe(v.date)}</td><td>${safe(petName(v.petId))}</td><td>${safe(v.serviceName)}</td><td>${safe(v.symptoms)}</td><td>${money(v.charge)}</td><td>${actions('visit',v.id)}</td></tr>`));
+  $('serviceTable').innerHTML = table(['Service','Category','Price','Actions'],data.services.filter(s=>clean(s.name+' '+s.category).includes(sq)).map(s=>`<tr><td>${safe(s.name)}</td><td>${safe(s.category)}</td><td>${money(s.price)}</td><td>${actions('service',s.id)}</td></tr>`));
+  $('reminderTable').innerHTML = table(['Pet','Reminder','Due Date','Status','Actions'],[...data.reminders].sort((a,b)=>a.date.localeCompare(b.date)).map(r=>`<tr><td>${safe(petName(r.petId))}</td><td>${safe(r.title)}</td><td>${safe(r.date)}</td><td>${r.done?'Completed':r.date<localDate()?'Overdue':'Pending'}</td><td><button class="secondary" data-toggle="${safe(r.id)}">${r.done?'Undo':'Complete'}</button>${actions('reminder',r.id)}</td></tr>`));
+  const sel=$('historyPet');
+  const previous=selectedHistoryPet || sel.value;
+  sel.innerHTML=data.pets.map(p=>`<option value="${safe(p.id)}">${safe(p.name)} — ${safe(p.owner)}</option>`).join('');
+  if(data.pets.some(p=>p.id===previous))sel.value=previous;
+  selectedHistoryPet=sel.value;
+  renderHistory();
+}
+function renderHistory() {
+  const pid=$('historyPet').value;
+  selectedHistoryPet=pid;
+  const visits=data.visits.filter(v=>v.petId===pid).map(v=>({date:v.date,title:v.serviceName,detail:v.symptoms+' | Treatment: '+(v.treatment||'Not recorded')+' | Charge: '+money(v.charge)}));
+  const reminders=data.reminders.filter(r=>r.petId===pid).map(r=>({date:r.date,title:'Reminder: '+r.title,detail:r.done?'Completed':'Pending'}));
+  const items=[...visits,...reminders].sort((a,b)=>b.date.localeCompare(a.date));
+  const overdue=data.reminders.filter(r=>r.petId===pid&&!r.done&&r.date<localDate()).length;
+  const counts={};
+  visits.forEach(v=>{const key=clean(v.detail.split(' | ')[0]); if(key)counts[key]=(counts[key]||0)+1;});
+  const recurring=Object.keys(counts).filter(k=>counts[k]>=2);
+  $('healthAlerts').textContent=overdue+' overdue reminder(s). '+(recurring.length?'Repeated symptoms/reasons: '+recurring.join(', ')+'. A veterinarian should review.':'No repeated symptoms or reasons detected.');
+  $('historyList').innerHTML=items.map(x=>`<div class="timeline-item"><strong>${safe(x.date)} · ${safe(x.title)}</strong><p>${safe(x.detail)}</p></div>`).join('') || '<p class="empty">No medical history yet.</p>';
+}
+function input(name,label,value='',type='text',required=true) {
+  return `<label>${label}<input name="${name}" type="${type}" value="${safe(value)}" ${required?'required':''}></label>`;
+}
+function select(name,label,options,value='',required=true) {
+  return `<label>${label}<select name="${name}" ${required?'required':''}>${options.map(o=>`<option value="${safe(o[0])}" ${o[0]===value?'selected':''}>${safe(o[1])}</option>`).join('')}</select></label>`;
+}
+function petOptions() { return [['','Select pet'],...data.pets.map(p=>[p.id,p.name+' — '+p.owner])]; }
+function serviceOptions() { return [['','Select service'],...data.services.map(s=>[s.id,s.name+' ('+money(s.price)+')'])]; }
+function openForm(type,recordId='') {
+  if ((type==='visit'||type==='reminder')&&!data.pets.length) return alert('Register a pet first.');
+  editingType=type; editingId=recordId;
+  let list=data[type==='pet'?'pets':type==='visit'?'visits':type==='service'?'services':'reminders'];
+  let x=list.find(r=>r.id===recordId) || {};
+  $('formTitle').textContent=(recordId?'Edit ':'Add ')+type.charAt(0).toUpperCase()+type.slice(1);
+  let html='';
+  if(type==='pet') html=input('name','Pet Name',x.name)+input('owner','Owner Name',x.owner)+select('species','Species',['Dog','Cat','Bird','Rabbit','Other'].map(a=>[a,a]),x.species||'Dog')+input('breed','Breed',x.breed)+select('sex','Sex',['Male','Female','Unknown'].map(a=>[a,a]),x.sex||'Unknown')+input('birth','Birth Date',x.birth||'','date',false);
+  if(type==='service') html=input('name','Service Name',x.name)+select('category','Category',['Consultation','Vaccination','Grooming','Treatment','Diagnostics','Other'].map(a=>[a,a]),x.category||'Consultation')+input('price','Price (PHP)',x.price??0,'number');
+  if(type==='visit') html=select('petId','Pet',petOptions(),x.petId)+input('date','Visit Date',x.date||localDate(),'date')+select('serviceId','Clinic Service',serviceOptions(),x.serviceId)+input('symptoms','Symptoms / Reason for Visit',x.symptoms)+`<label>Treatment / Notes<textarea name="treatment">${safe(x.treatment)}</textarea></label>`+input('charge','Charge (PHP)',x.charge??0,'number')+input('followup','Follow-up Date (optional)',x.followup||'','date',false);
+  if(type==='reminder') html=select('petId','Pet',petOptions(),x.petId)+input('title','Reminder Title',x.title)+input('date','Due Date',x.date||localDate(),'date')+select('done','Status',[['false','Pending'],['true','Completed']],String(x.done??false));
+  $('formFields').innerHTML='<div class="grid">'+html+'</div>';
+  $('modalBg').style.display='flex';
+  if(type==='visit') {
+    $('recordForm').elements.serviceId.onchange=function() {
+      const service=data.services.find(s=>s.id===this.value);
+      if(service)$('recordForm').elements.charge.value=service.price;
+    };
+  }
+}
+function closeForm() { $('modalBg').style.display='none'; }
+function localDate() { return new Date().toLocaleDateString('en-CA'); }
+function submitForm(event) {
+  event.preventDefault();
+  const form=new FormData($('recordForm'));
+  const values=Object.fromEntries(form.entries());
+  const type=editingType;
+  const list=data[type==='pet'?'pets':type==='visit'?'visits':type==='service'?'services':'reminders'];
+  const old=list.find(x=>x.id===editingId);
+  const record={...old,...values,id:editingId||id()};
+  if(type==='pet') {
+    if(data.pets.some(p=>p.id!==record.id&&clean(p.name)===clean(record.name)&&clean(p.owner)===clean(record.owner)&&clean(p.species)===clean(record.species)&&clean(p.breed)===clean(record.breed)))return alert('Duplicate pet record already exists.');
+    if(record.birth&&record.birth>localDate())return alert('Birth date cannot be in the future.');
+  }
+  if(type==='service') {
+    record.price=Number(record.price);
+    if(record.price<0||!Number.isFinite(record.price))return alert('Enter a valid price.');
+    if(data.services.some(s=>s.id!==record.id&&clean(s.name)===clean(record.name)))return alert('Duplicate service name already exists.');
+  }
+  if(type==='visit') {
+    if(!record.petId||!record.serviceId)return alert('Choose a pet and a service.');
+    record.charge=Number(record.charge);
+    if(record.charge<0||!Number.isFinite(record.charge))return alert('Enter a valid charge.');
+    record.serviceName=data.services.find(s=>s.id===record.serviceId)?.name||'Service';
+    if(data.visits.some(v=>v.id!==record.id&&v.petId===record.petId&&v.date===record.date&&v.serviceId===record.serviceId&&clean(v.symptoms)===clean(record.symptoms)))return alert('Duplicate consultation already exists.');
+  }
+  if(type==='reminder') {
+    if(!record.petId)return alert('Choose a pet.');
+    record.done=record.done==='true';
+    if(data.reminders.some(r=>r.id!==record.id&&r.petId===record.petId&&r.date===record.date&&clean(r.title)===clean(record.title)))return alert('Duplicate reminder already exists.');
+  }
+  if(old)Object.assign(old,record); else list.push(record);
+  if(type==='visit'&&record.followup){
+    const reminderTitle='Follow-up: '+record.symptoms;
+    const exists=data.reminders.some(r=>r.petId===record.petId&&r.date===record.followup&&clean(r.title)===clean(reminderTitle));
+    if(!exists)data.reminders.push({id:id(),petId:record.petId,title:reminderTitle,date:record.followup,done:false});
+  }
+  closeForm(); save();
+}
+function deleteRecord(type,recordId) {
+  const key={pet:'pets',visit:'visits',service:'services',reminder:'reminders'}[type];
+  if(!confirm('Delete this record?'))return;
+  if(type==='pet') {
+    if(data.visits.some(v=>v.petId===recordId)||data.reminders.some(r=>r.petId===recordId))return alert('Delete linked consultations and reminders before deleting this pet.');
+  }
+  data[key]=data[key].filter(x=>x.id!==recordId);
+  save();
+}
+document.addEventListener('click',function(event){
+  const b=event.target.closest('button');if(!b)return;
+  if(b.dataset.edit)openForm(b.dataset.edit,b.dataset.id);
+  if(b.dataset.delete)deleteRecord(b.dataset.delete,b.dataset.id);
+  if(b.dataset.toggle){const r=data.reminders.find(x=>x.id===b.dataset.toggle);if(r){r.done=!r.done;save();}}
+});
+$('recordForm').addEventListener('submit',submitForm);
+$('modalBg').addEventListener('click',e=>{if(e.target===$('modalBg'))closeForm();});
+render();
+</script>
+</body>
+</html>
